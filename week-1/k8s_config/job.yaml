@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sample-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: sample-job
+        image: sample:v1
+        command: ["python", "sample-web-server.py"]
+      restartPolicy: Never
+  backoffLimit: 4
