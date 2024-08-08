@@ -1,7 +1,7 @@
 name: Docker Build and Push
 
 on:
-  push:
+  pull_request:
     branches:
       - 'main'
 
@@ -25,6 +25,6 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
-        context: .
+        context: ./week-1
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/sample-web-server:latest
