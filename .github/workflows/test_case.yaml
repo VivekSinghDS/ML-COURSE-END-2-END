@@ -21,13 +21,7 @@ jobs:
           -v /mnt/data/minio/data:/data
           -e "MINIO_ROOT_USER=minio_access_key" 
           -e "MINIO_ROOT_PASSWORD=minio_secret_key"
-        command: server /data --console-address ":9001"
-        env:
-          MINIO_SERVER_URL: "127.0.0.1:9000"
-        healthcheck:
-          test: ["CMD", "curl", "-f", "http://127.0.0.1:9000/minio/health/live"]
-          interval: 10s
-          retries: 5
+        entrypoint: ["minio", "server", "/data", "--console-address", ":9001"]
 
     steps:
     - name: Checkout code
@@ -37,6 +31,13 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.8'  # Adjust the Python version as needed
+
+    - name: Wait for MinIO to be ready
+      run: |
+        until curl -f http://127.0.0.1:9000/minio/health/live; do
+          echo "Waiting for MinIO..."
+          sleep 5
+        done
 
     - name: Install dependencies
       run: |
