@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     services:
@@ -46,7 +46,7 @@ jobs:
         MINIO_SERVER_URL: http://127.0.0.1:9000
       run: |
         pytest -ss
-        
+
     - name: Lint with black
           run: |
             black .
