@@ -31,7 +31,7 @@ class MinIO:
 
 @pytest.fixture
 def minio_client():
-    address = 'localhost:9000'
+    address = '127.0.0.1:60232'
     return MinIO(address)
 
 def test_insert(minio_client):

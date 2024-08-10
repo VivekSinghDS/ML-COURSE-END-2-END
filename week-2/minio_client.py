@@ -3,6 +3,7 @@ from minio import Minio
 
 class MinIO:
     def __init__(self, address: str) -> None:
+        print(address)
         self.client = Minio(address,
                access_key='minio_access_key',
                secret_key='minio_secret_key',
@@ -30,8 +31,8 @@ class MinIO:
         object_name = object_name.rsplit('/')[-1]
         self.client.remove_object(bucket_name, object_name)
 
-address = 'localhost:9000'
-bucket_name = 'sample23xyz'
+address = '127.0.0.1:60232'
+bucket_name = 'demo'
 sample_file = './sample.txt'
 updated_file = './sample2.txt'
 
@@ -41,5 +42,5 @@ client.insert(bucket_name, sample_file)
 client.get(bucket_name)
 client.put(bucket_name, updated_file)
 client.get(bucket_name)
-# client.delete_object(bucket_name, sample_file)
-# client.get(bucket_name)
+client.delete_object(bucket_name, sample_file)
+client.get(bucket_name)
