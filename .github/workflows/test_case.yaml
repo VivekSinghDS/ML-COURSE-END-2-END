@@ -34,19 +34,19 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.12'
+        python-version: '3.10'
 
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install -r requirements.txt  # Adjust the path if requirements.txt is located elsewhere
+        pip install -r week-2/requirements.txt
+
+    - name: Lint with black
+      run: |
+        black .
 
     - name: Run tests with pytest
       env:
         MINIO_SERVER_URL: http://127.0.0.1:9000
       run: |
-        pytest -ss
-
-    - name: Lint with black
-          run: |
-            black .
+        pytest -ss week-2/test_cases.py
