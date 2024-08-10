@@ -10,19 +10,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      minio:
-        image: quay.io/minio/minio
-        ports:
-          - 9000:9000
-          - 9001:9001
-        options: > 
-          --name minio-service 
-          -v /mnt/data/minio/data:/data
-        env:
-          MINIO_ROOT_USER: minio_access_key
-          MINIO_ROOT_PASSWORD: minio_secret_key
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -34,8 +21,15 @@ jobs:
 
     - name: Start MinIO server
       run: |
-        docker exec minio-service minio server /data --console-address ":9001"
-
+        docker run -d \
+          -p 9000:9000 \
+          -p 9001:9001 \
+          --name minio \
+          -v ${{ github.workspace }}/minio/data:/data \
+          -e "MINIO_ROOT_USER=minio_access_key" \
+          -e "MINIO_ROOT_PASSWORD=minio_secret_key" \
+          quay.io/minio/minio server /data --console-address ":9001"
+        
     - name: Wait for MinIO to be ready
       run: |
         until curl -f http://127.0.0.1:9000/minio/health/live; do
