@@ -9,9 +9,24 @@ on:
       - main
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    
+
+    services:
+      minio:
+        image: quay.io/minio/minio:latest
+        env:
+          MINIO_ROOT_USER: minio_access_key
+          MINIO_ROOT_PASSWORD: minio_secret_key
+        ports:
+          - 9000:9000
+        options: >-
+          --health-cmd="curl --silent --fail http://localhost:9000/minio/health/live || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        command: server /data --console-address ":9001"
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -19,19 +34,19 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
+        python-version: '3.12'
 
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install -r week-2/requirements.txt
+        pip install -r requirements.txt  # Adjust the path if requirements.txt is located elsewhere
 
-    # Lint with black
-    - name: Lint with black
-      run: |
-        black .
-
-    # Run tests
     - name: Run tests with pytest
+      env:
+        MINIO_SERVER_URL: http://127.0.0.1:9000
       run: |
-        pytest -ss week-2/test_cases.py
+        pytest -ss
+        
+    - name: Lint with black
+          run: |
+            black .
