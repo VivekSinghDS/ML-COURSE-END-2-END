@@ -1,0 +1,49 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop  # Adjust to your default branches
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'  # Adjust the Python version as needed
+
+    - name: Start MinIO server
+      run: |
+        docker run -d \
+          -p 9000:9000 \
+          -p 9001:9001 \
+          --name minio \
+          -v ${{ github.workspace }}/minio/data:/data \
+          -e "MINIO_ROOT_USER=minio_access_key" \
+          -e "MINIO_ROOT_PASSWORD=minio_secret_key" \
+          quay.io/minio/minio server /data --console-address ":9001"
+        
+    - name: Wait for MinIO to be ready
+      run: |
+        until curl -f http://127.0.0.1:9000/minio/health/live; do
+          echo "Waiting for MinIO..."
+          sleep 5
+        done
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r ./week-2/requirements.txt
+
+    - name: Run tests with pytest
+      env:
+        MINIO_SERVER_URL: "127.0.0.1:9000"
+      run: |
+        pytest --maxfail=1 --disable-warnings

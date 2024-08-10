@@ -12,5 +12,4 @@ USER appuser
 EXPOSE 8000
 COPY --chown=appuser:appuser . .
 
-#CMD ["uvicorn", "api:app", "--port", "8000"]
 CMD ["uvicorn", "sample-web-server:app", "--port", "8000", "--host", "0.0.0.0", "--no-access-log"]
