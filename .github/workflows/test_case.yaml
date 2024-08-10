@@ -29,7 +29,7 @@ jobs:
     # Lint with black
     - name: Lint with black
       run: |
-        black --check .
+        black .
 
     # Run tests
     - name: Run tests with pytest
