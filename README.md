@@ -40,3 +40,14 @@ The file is present in `week-2/single_multiprocessing.py`
 
 
 The results demonstrate significant performance gains with multiprocessing. As the number of processes increases, the execution time decreases, achieving up to a 6.63x speedup with 8 processes. This highlights the effectiveness of parallel processing in reducing computation time.
+
+## Use DVC + MinIO
+```
+dvc init 
+dvc add ./week-3/sample.json 
+dvc remote add -d minio s3://dvc-store
+dvc remote modify minio endpointurl http://127.0.0.1:53132
+dvc remote modify minio access_key_id minio_access_key
+dvc remote modify minio secret_access_key minio_secret_key
+dvc push
+```
