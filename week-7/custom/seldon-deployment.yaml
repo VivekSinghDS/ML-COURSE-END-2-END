@@ -1,0 +1,27 @@
+apiVersion: machinelearning.seldon.io/v1
+kind: SeldonDeployment
+metadata:
+  name: huggingface-model
+  namespace: default
+spec:
+  predictors:
+    - name: default
+      replicas: 1
+      graph:
+        children: []
+        implementation: CUSTOM
+        modelUri: "https://api-inference.huggingface.co/models/microsoft/phi-2"
+        name: huggingface-model
+        endpoint:
+          type: REST
+      componentSpecs:
+        - spec:
+            containers:
+              - name: huggingface-model
+                image: your-docker-image  # Custom Docker image containing the Python script
+                env:
+                  - name: "HUGGING_FACE_HUB_TOKEN"
+                    valueFrom:
+                      secretKeyRef:
+                        name: huggingface-secrets
+                        key: hf_token

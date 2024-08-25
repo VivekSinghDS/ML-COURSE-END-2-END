@@ -51,3 +51,29 @@ dvc remote modify minio access_key_id minio_access_key
 dvc remote modify minio secret_access_key minio_secret_key
 dvc push
 ```
+
+## Seldon core QuickStart
+```
+docker build -t test-image .                      
+docker run -p 5000:5000 test-image
+docker tag test-image wewakesingh120300/test-image
+docker push wewakesingh120300/test-image  
+kubectl apply -f seldon-deployment.yaml  
+kubectl get seldondeployments      
+kubectl get pods
+kubectl logs <pod-name>
+kubectl describe pod <pod-name>
+kubectl port-forward <pod-name> 5000:5000
+```
+
+Once you are done with the step, you can use the given below cURL to make a call
+```
+curl -X POST http://localhost:5000/predict \               
+     -H "Content-Type: application/json" \
+     -d '{"data": {"ndarray": ["Hello, world!"]}}'  
+```
+
+The response will be something like 
+```
+{"data":{"ndarray":["[{\"generated_text\":\"Hello, world!') -> 'Hello, world!'\\n    repeat_your_message_twice('こんにちは！') -> 'こんにちは！こんにちは！'\\n    \\\"\\\"\\\"\\n    return message * 2\\n\\n\"}]"]}}
+```
