@@ -1,0 +1,24 @@
+apiVersion: machinelearning.seldon.io/v1
+kind: SeldonDeployment
+metadata:
+  name: iris-model
+spec:
+  name: iris
+  predictors:
+  - componentSpecs:
+    - spec:
+        containers:
+        - name: classifier-v1
+          image: wewakesingh120300/classifier-v1:latest
+        - name: classifier-v2
+          image: wewakesingh120300/classifier-v2:latest
+    graph:
+      name: classifier-v1
+      children:
+      - name: classifier-v2
+    name: default
+    replicas: 1
+    traffic: 80  # Traffic percentage for classifier-v1
+    children:
+    - name: classifier-v2
+      traffic: 20  # Traffic percentage for classifier-v2
