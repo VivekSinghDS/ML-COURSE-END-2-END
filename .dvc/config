@@ -1,0 +1,8 @@
+[core]
+    remote = minio
+['remote "minio"']
+    url = s3://dvc-store
+    endpointurl = http://127.0.0.1:53132
+    access_key_id = minio_access_key
+    secret_access_key = minio_secret_key
+    use_ssl = false
