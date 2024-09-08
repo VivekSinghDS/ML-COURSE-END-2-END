@@ -9,7 +9,7 @@ COPY requirements.txt ./requirements.txt
 RUN pip install -r requirements.txt
 RUN pip install uvicorn fastapi
 ENV HUGGING_FACE_HUB_TOKEN="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"
-COPY api.py api.py
+COPY advanced_api.py api.py
 # Change ownership of the working directory to the appuser
 RUN chown -R appuser:appuser /home/appuser
 

@@ -77,3 +77,21 @@ The response will be something like
 ```
 {"data":{"ndarray":["[{\"generated_text\":\"Hello, world!') -> 'Hello, world!'\\n    repeat_your_message_twice('こんにちは！') -> 'こんにちは！こんにちは！'\\n    \\\"\\\"\\\"\\n    return message * 2\\n\\n\"}]"]}}
 ```
+
+# Use custom registry 
+
+Start your own local registry
+```
+docker run -d -p 5000:5000 --restart=always --name registry registry:2
+docker tag b8e4217af9a2 localhost:5000/custom-model:v1
+docker push localhost:5000/custom-model:v1
+```
+
+Start minikube 
+```
+minikube start
+eval $(minikube docker-env)
+docker tag b8e4217af9a2 custom-model:v1
+kubectl apply -f seldon-deployment.yaml
+```
+

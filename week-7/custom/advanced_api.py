@@ -10,7 +10,7 @@ import uvicorn
 
 app = FastAPI()
 
-minio_url = "http://127.0.0.1:57445"  # Use the MinIO service URL provided by `minikube service minio --url`
+minio_url = "http://127.0.0.1:62577"  # Use the MinIO service URL provided by `minikube service minio --url`
 access_key = "minio_access_key"  # Replace with your access key
 secret_key = "minio_secret_key"  # Replace with your secret key
 bucket_name = "ml-models"
