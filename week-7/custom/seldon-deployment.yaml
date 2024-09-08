@@ -1,27 +1,24 @@
 apiVersion: machinelearning.seldon.io/v1
 kind: SeldonDeployment
 metadata:
-  name: huggingface-model
-  namespace: default
+  name: iris-model
 spec:
+  name: iris
   predictors:
-    - name: default
-      replicas: 1
-      graph:
-        children: []
-        implementation: CUSTOM
-        modelUri: "https://api-inference.huggingface.co/models/microsoft/phi-2"
-        name: huggingface-model
-        endpoint:
-          type: REST
-      componentSpecs:
-        - spec:
-            containers:
-              - name: huggingface-model
-                image: your-docker-image  # Custom Docker image containing the Python script
-                env:
-                  - name: "HUGGING_FACE_HUB_TOKEN"
-                    valueFrom:
-                      secretKeyRef:
-                        name: huggingface-secrets
-                        key: hf_token
+  - componentSpecs:
+    - spec:
+        containers:
+        - name: classifier
+          image: localhost:5000/custom-model:latest
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 6000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+    graph:
+      name: classifier
+    name: default
+    replicas: 1
