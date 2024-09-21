@@ -1,0 +1,16 @@
+name: "my_model"
+backend: "python"
+input [
+  {
+    name: "input_0"
+    data_type: TYPE_STRING  # Use string data type for input
+    dims: [ -1 ]            # Dynamic batch dimension if needed
+  }
+]
+output [
+  {
+    name: "output_0"
+    data_type: TYPE_FP32     # Output is still a float, as expected
+    dims: [ 1 ]
+  }
+]

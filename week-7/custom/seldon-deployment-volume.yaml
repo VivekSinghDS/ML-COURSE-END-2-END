@@ -1,50 +1,50 @@
 apiVersion: machinelearning.seldon.io/v1
 kind: SeldonDeployment
 metadata:
-  name: iris-model
+  name: seldon-deployment-example
 spec:
-  name: iris
+  name: sklearn-iris-deployment
   predictors:
-    - componentSpecs:
-        - spec:
-            containers:
-            - name: classifier
-              image: localhost:5000/custom-model:latest
-              imagePullPolicy: Always
-              readinessProbe:
-                httpGet:
-                  path: /health
-                  port: 6000
-                initialDelaySeconds: 10
-                periodSeconds: 10
-                failureThreshold: 3
-              env:
-              - name: MINIO_ENDPOINT
-                value: "http://127.0.0.1:62577"
-              - name: MINIO_ACCESS_KEY
-                value: "minio_access_key"   # Replace with actual access key
-              - name: MINIO_SECRET_KEY
-                value: "minio_secret_key"   # Replace with actual secret key
-              - name: MODEL_BUCKET
-                value: "ml-models"
-              - name: MODEL_PATH
-                value: "week-7/custom/checkpoint-350"
-            initContainers:
-            - name: model-downloader
-              image: minio/mc
-              command: ["/bin/sh", "-c"]
-              args:
-                - >
-                  mc alias set myminio $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY &&
-                  mc cp myminio/$MODEL_BUCKET/$MODEL_PATH /mnt/models/model-file
-              volumeMounts:
-                - mountPath: /mnt/models
-                  name: model-volume
-      graph:
-        name: classifier
-        type: MODEL
-        modelUri: /mnt/models/model-file
-      name: default
-      replicas: 1
-  annotations:
-    seldon.io/executor: "true"  # Ensure that the Seldon executor is enabled
+  - componentSpecs:
+    - spec:
+        volumes:
+        - name: model-volume
+          emptyDir: {}  # Temporary storage for the model
+        initContainers:
+        - name: model-downloader
+          image: minio/mc
+          command: ["/bin/sh", "-c"]
+          args:
+            - >
+              mc alias set myminio http://127.0.0.1:62577 minio_access_key minio_secret_key &&
+              mc cp myminio/ml-models/week-7/custom/checkpoint-350 /mnt/models/model-file
+          volumeMounts:
+            - name: model-volume
+              mountPath: /mnt/models
+        containers:
+        - image: seldonio/sklearn-iris:0.1
+          imagePullPolicy: IfNotPresent
+          name: sklearn-iris-classifier
+          volumeMounts:
+          - name: model-volume
+            mountPath: "/cert/"
+          env:
+          - name: MINIO_ENDPOINT
+            value: "http://127.0.0.1:62577"
+          - name: MINIO_ACCESS_KEY
+            value: "minio_access_key"   # Replace with your actual access key
+          - name: MINIO_SECRET_KEY
+            value: "minio_secret_key"   # Replace with your actual secret key
+          - name: MODEL_BUCKET
+            value: "ml-models"
+          - name: MODEL_PATH
+            value: "week-7/custom/checkpoint-350"
+    graph:
+      children: []
+      endpoint:
+        type: REST
+      name: sklearn-iris-classifier
+      type: MODEL
+      modelUri: /cert/model-file  # Adjust according to where the model is located
+    name: sklearn-iris-predictor
+    replicas: 1

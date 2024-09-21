@@ -89,9 +89,11 @@ docker push localhost:5000/custom-model:v1
 
 Start minikube 
 ```
+sudo chmod 777 /var/run/docker.sock
 minikube start
 eval $(minikube docker-env)
 docker tag b8e4217af9a2 custom-model:v1
 kubectl apply -f seldon-deployment.yaml
+ kubectl describe seldondeployment iris-model
 ```
 
