@@ -108,3 +108,4 @@ python fancy_client.py
 ```
 
 The output will be something like this as shown below 
+![Screenshot 2024-09-22 at 9 25 27 PM](https://github.com/user-attachments/assets/d9fab691-22a8-467e-a504-c31f40031918)
