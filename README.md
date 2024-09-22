@@ -92,3 +92,19 @@ docker run \
   tritonserver-custom:latest \
   tritonserver --model-repository=/models
 ```
+
+Once you are done with the building and running of your containers, you should see something like this 
+
+```
+I0922 15:51:40.312034 1 grpc_server.cc:2451] Started GRPCInferenceService at 0.0.0.0:8001
+I0922 15:51:40.312268 1 http_server.cc:3558] Started HTTPService at 0.0.0.0:8000
+I0922 15:51:40.362755 1 http_server.cc:187] Started Metrics Service at 0.0.0.0:8002
+```
+
+To query your service, use the following command 
+
+``` 
+python fancy_client.py
+```
+
+The output will be something like this as shown below 
