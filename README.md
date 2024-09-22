@@ -78,20 +78,34 @@ The response will be something like
 {"data":{"ndarray":["[{\"generated_text\":\"Hello, world!') -> 'Hello, world!'\\n    repeat_your_message_twice('こんにちは！') -> 'こんにちは！こんにちは！'\\n    \\\"\\\"\\\"\\n    return message * 2\\n\\n\"}]"]}}
 ```
 
-# Use custom registry 
 
-Start your own local registry
-```
-docker run -d -p 5000:5000 --restart=always --name registry registry:2
-docker tag b8e4217af9a2 localhost:5000/custom-model:v1
-docker push localhost:5000/custom-model:v1
-```
+## Deploy on triton 
 
-Start minikube 
 ```
-minikube start
-eval $(minikube docker-env)
-docker tag b8e4217af9a2 custom-model:v1
-kubectl apply -f seldon-deployment.yaml
+docker build -t tritonserver-custom:latest .
+
+docker run \
+  -v /Users/vivek.singh/ML-COURSE/week-7/triton:/models \
+  -p 8000:8000 \
+  -p 8001:8001 \
+  -p 8002:8002 \
+  tritonserver-custom:latest \
+  tritonserver --model-repository=/models
 ```
 
+Once you are done with the building and running of your containers, you should see something like this 
+
+```
+I0922 15:51:40.312034 1 grpc_server.cc:2451] Started GRPCInferenceService at 0.0.0.0:8001
+I0922 15:51:40.312268 1 http_server.cc:3558] Started HTTPService at 0.0.0.0:8000
+I0922 15:51:40.362755 1 http_server.cc:187] Started Metrics Service at 0.0.0.0:8002
+```
+
+To query your service, use the following command 
+
+``` 
+python fancy_client.py
+```
+
+The output will be something like this as shown below 
+![Screenshot 2024-09-22 at 9 25 27 PM](https://github.com/user-attachments/assets/d9fab691-22a8-467e-a504-c31f40031918)
