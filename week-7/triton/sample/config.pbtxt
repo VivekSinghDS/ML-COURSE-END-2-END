@@ -1,0 +1,30 @@
+name: "sample"
+max_batch_size: 0  # Disable batching
+
+input [
+  {
+    name: "INPUT_IMAGE_PATH"
+    data_type: TYPE_STRING
+    dims: [ 1 ]  # No batch dimension
+  }
+]
+
+output [
+  {
+    name: "OUTPUT_QUALITY"
+    data_type: TYPE_FP32
+    dims: [ 1 ]  # No batch dimension
+  }
+]
+
+instance_group [
+  {
+    kind: KIND_CPU
+    count: 1
+  }
+]
+
+# dynamic_batching {
+#   preferred_batch_size: [ 1 ]
+#   max_queue_delay_microseconds: 1000000
+# }

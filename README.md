@@ -77,3 +77,18 @@ The response will be something like
 ```
 {"data":{"ndarray":["[{\"generated_text\":\"Hello, world!') -> 'Hello, world!'\\n    repeat_your_message_twice('こんにちは！') -> 'こんにちは！こんにちは！'\\n    \\\"\\\"\\\"\\n    return message * 2\\n\\n\"}]"]}}
 ```
+
+
+## Deploy on triton 
+
+```
+docker build -t tritonserver-custom:latest .
+
+docker run \
+  -v /Users/vivek.singh/ML-COURSE/week-7/triton:/models \
+  -p 8000:8000 \
+  -p 8001:8001 \
+  -p 8002:8002 \
+  tritonserver-custom:latest \
+  tritonserver --model-repository=/models
+```
