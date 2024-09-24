@@ -1,13 +1,15 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
-from triton_python_backend_utils import InferenceRequest, InferenceResponse, get_input_tensor_by_name, get_output_tensor_by_name
+import triton_python_backend_utils as pb_utils
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
     BitsAndBytesConfig,
     AutoTokenizer,
 )
+import json 
+import numpy as np
 class TritonPythonModel:
     def initialize(self, args):
         """
@@ -69,24 +71,28 @@ class TritonPythonModel:
         """
         responses = []
         for request in requests:
-            dialogue = get_input_tensor_by_name(request, "dialogue").as_numpy().item().decode("utf-8")
-            summary = get_input_tensor_by_name(request, "summary").as_numpy().item().decode("utf-8")
+            # Get the input tensors (assuming a string input here)
+            input_data = pb_utils.get_input_tensor_by_name(request, "INPUT_DATA").as_numpy().tolist()
             
+            # Deserialize the input data if necessary
+            input_dict = json.loads(input_data[0])
+            dialogue = input_dict.get("dialogue")
+            # Prepare the input for model generation
             prompt = f"Instruct: Summarize the following conversation.\n{dialogue}\nOutput:\n"
+            
             try:
-                peft_model_res = self.gen(prompt, 5)
+                # Call your fine-tuned model
+                peft_model_res = self.gen(self.model, prompt, 5)
                 peft_model_output = peft_model_res[0].split('Output:\n')[1]
+                prefix, success, result = peft_model_output.partition('###')
             except Exception as e:
-                raise RuntimeError(f"Model generation failed: {str(e)}")
+                result = f"Model generation failed: {str(e)}"
             
-            output = peft_model_res[0]
-            
-            # Creating output tensor
-            output_tensor = InferenceResponse(
-                id=request.id,
-                outputs=[get_output_tensor_by_name(request, "output").set_output(output)]
-            )
-            
-            responses.append(output_tensor)
-        
+            # Create an output tensor
+            output_data = json.dumps({"data": {"ndarray": [peft_model_res]}})
+            output_tensor = pb_utils.Tensor("OUTPUT_DATA", np.array([output_data], dtype=object))
+
+            # Create and send the inference response
+            responses.append(pb_utils.InferenceResponse([output_tensor]))
+
         return responses
