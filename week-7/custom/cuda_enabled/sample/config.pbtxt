@@ -1,0 +1,26 @@
+name: "sample"
+backend: "python"
+
+input [
+  {
+    name: "dialogue"
+    data_type: TYPE_STRING
+    dims: [1]
+  }
+]
+
+output [
+  {
+    name: "output"
+    data_type: TYPE_STRING
+    dims: [1]
+  }
+]
+
+instance_group [
+  {
+    kind: KIND_GPU
+    gpus: [0]  # Index of the GPU (you can specify multiple GPUs)
+  }
+]
+max_batch_size: 1
