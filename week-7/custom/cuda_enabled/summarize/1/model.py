@@ -34,7 +34,7 @@ class TritonPythonModel:
         
         # Load fine-tuned model
         self.model = PeftModel.from_pretrained(base_model, 
-            "/models/sample/1/checkpoint-350",
+            "/models/summarize/1/checkpoint-350",
             torch_dtype=torch.float16,
             is_trainable=False
         )

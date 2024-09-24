@@ -1,6 +1,5 @@
-name: "summarize_model"
-platform: "python"
-max_batch_size: 1
+name: "summarize"
+backend: "python"
 
 input [
   {
