@@ -55,14 +55,14 @@ class TritonPythonModel:
         """
         toks = self.tokenizer(prompt, return_tensors="pt")
         res = self.model.generate(
-            **toks.to("gpu"), 
+            **toks.to("cuda"), 
             max_new_tokens=maxlen, 
             do_sample=sample, 
             num_return_sequences=1, 
             temperature=0.1, 
             num_beams=1, 
             top_p=0.95
-        ).to('gpu')
+        ).to('cuda')
         return self.tokenizer.batch_decode(res, skip_special_tokens=True)
     
     def execute(self, requests):
