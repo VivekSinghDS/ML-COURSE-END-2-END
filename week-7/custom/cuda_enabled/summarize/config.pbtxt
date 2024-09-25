@@ -1,0 +1,18 @@
+name: "summarize"
+backend: "python"
+
+input [
+  {
+    name: "INPUT_DATA"
+    data_type: TYPE_STRING
+    dims: [1]
+  }
+]
+
+output [
+  {
+    name: "OUTPUT_DATA"
+    data_type: TYPE_STRING
+    dims: [1]
+  }
+]
