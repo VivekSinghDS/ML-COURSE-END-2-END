@@ -78,19 +78,25 @@ class TritonPythonModel:
             input_dict = json.loads(input_data[0])
             dialogue = input_dict.get("dialogue")
             # Prepare the input for model generation
+            print(dialogue, ' I am here')
             prompt = f"Instruct: Summarize the following conversation.\n{dialogue}\nOutput:\n"
-            
+            peft_model_res = None
+            result = None
             try:
                 # Call your fine-tuned model
-                peft_model_res = self.gen(self.model, prompt, 5)
+                peft_model_res = self.gen(prompt, 5)
                 peft_model_output = peft_model_res[0].split('Output:\n')[1]
                 prefix, success, result = peft_model_output.partition('###')
             except Exception as e:
                 result = f"Model generation failed: {str(e)}"
             
+            if peft_model_res:
             # Create an output tensor
-            output_data = json.dumps({"data": {"ndarray": [peft_model_res]}})
-            output_tensor = pb_utils.Tensor("OUTPUT_DATA", np.array([output_data], dtype=object))
+                output_data = json.dumps({"data": {"ndarray": [peft_model_res]}})
+                output_tensor = pb_utils.Tensor("OUTPUT_DATA", np.array([output_data], dtype=object))
+            else:
+                output_data = json.dumps({"data": {"ndarray": [result]}})
+                output_tensor = pb_utils.Tensor("OUTPUT_DATA", np.array([output_data], dtype=object))
 
             # Create and send the inference response
             responses.append(pb_utils.InferenceResponse([output_tensor]))
