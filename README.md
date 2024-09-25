@@ -92,7 +92,17 @@ docker run \
   tritonserver-custom:latest \
   tritonserver --model-repository=/models
 ```
+For CUDA 
 
+```
+docker run --gpus=all \
+   -v /home/ec2-user/ML-COURSE-END-2-END/week-7/custom/cuda_enabled:/models \
+   -p 8000:8000 \
+   -p 8001:8001 \
+   -p 8002:8002 \
+   tritonserver-custom:latest \
+   tritonserver --model-repository=/models
+```
 Once you are done with the building and running of your containers, you should see something like this 
 
 ```
